@@ -37,6 +37,7 @@
             animation: {
               'float': 'float 6s ease-in-out infinite',
               'glow': 'glow 2s ease-in-out infinite alternate',
+              'fade-in': 'fadeIn 0.5s ease-out forwards',
             },
             keyframes: {
               float: {
@@ -46,6 +47,10 @@
               glow: {
                 'from': { boxShadow: '0 0 10px -10px #bef264' },
                 'to': { boxShadow: '0 0 20px 5px rgba(190, 242, 100, 0.2)' },
+              },
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
               }
             }
           }
@@ -58,6 +63,7 @@
         color: #fff;
         font-family: 'Plus Jakarta Sans', sans-serif;
         -webkit-tap-highlight-color: transparent;
+        margin: 0;
       }
       /* Custom Scrollbar */
       ::-webkit-scrollbar {
@@ -73,65 +79,56 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #3f3f46; 
       }
-      /* Loading State */
-      .loading-screen {
+      
+      /* App Loading Transition */
+      #root {
+        opacity: 0;
+        animation: fadeIn 0.8s ease-out forwards;
+      }
+      
+      @keyframes fadeIn {
+        to { opacity: 1; }
+      }
+
+      /* Initial Loading Screen (removed once React mounts) */
+      .initial-loader {
+        position: fixed;
+        inset: 0;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        height: 100vh;
-        width: 100vw;
         background-color: #09090b;
         color: #bef264;
         font-family: 'Outfit', sans-serif;
-        font-weight: bold;
-        font-size: 1.5rem;
-        text-align: center;
-        padding: 20px;
+        font-weight: 900;
+        font-size: 2rem;
+        z-index: 9999;
+        pointer-events: none;
+        animation: pulse 2s infinite;
       }
-      #error-log {
-        display: none;
-        margin-top: 20px;
-        color: #ef4444;
-        font-size: 0.8rem;
-        font-family: monospace;
-        background: rgba(0,0,0,0.5);
-        padding: 10px;
-        border-radius: 8px;
-        max-width: 90%;
-        word-break: break-all;
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
       }
     </style>
 <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@18.2.0",
-    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-    "react/jsx-runtime": "https://esm.sh/react@18.2.0/jsx-runtime",
-    "lucide-react": "https://esm.sh/lucide-react@0.344.0",
+    "react": "https://esm.sh/react@^19.2.4",
     "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
     "react/": "https://esm.sh/react@^19.2.4/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.564.0",
     "vite": "https://esm.sh/vite@^7.3.1",
     "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.4"
   }
 }
 </script>
-<script>
-  window.addEventListener('error', function(event) {
-    var errorLog = document.getElementById('error-log');
-    if (errorLog) {
-      errorLog.style.display = 'block';
-      errorLog.innerText += 'Error: ' + event.message + '\n';
-    }
-  });
-</script>
 </head>
   <body>
+    <!-- Simple loading text that disappears when React replaces the content -->
     <div id="root">
-      <div class="loading-screen">
-        KANTO...
-        <div id="error-log"></div>
-      </div>
+       <div class="initial-loader">KANTO</div>
     </div>
     <script type="module" src="./index.tsx"></script>
   </body>
