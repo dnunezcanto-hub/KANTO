@@ -64,6 +64,7 @@
         font-family: 'Plus Jakarta Sans', sans-serif;
         -webkit-tap-highlight-color: transparent;
         margin: 0;
+        overflow-x: hidden;
       }
       /* Custom Scrollbar */
       ::-webkit-scrollbar {
@@ -84,6 +85,7 @@
       #root {
         opacity: 0;
         animation: fadeIn 0.8s ease-out forwards;
+        min-height: 100vh;
       }
       
       @keyframes fadeIn {
@@ -105,11 +107,36 @@
         font-size: 2rem;
         z-index: 9999;
         pointer-events: none;
+        transition: opacity 0.5s ease;
+      }
+      
+      .loader-hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .pulse-anim {
         animation: pulse 2s infinite;
       }
+
       @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.5; }
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.95); }
+      }
+
+      #global-error {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #7f1d1d;
+        color: white;
+        padding: 20px;
+        font-family: monospace;
+        font-size: 12px;
+        z-index: 10000;
+        white-space: pre-wrap;
       }
     </style>
 <script type="importmap">
@@ -126,10 +153,31 @@
 </script>
 </head>
   <body>
-    <!-- Simple loading text that disappears when React replaces the content -->
-    <div id="root">
-       <div class="initial-loader">KANTO</div>
+    <!-- Error Container for debugging in production -->
+    <div id="global-error"></div>
+
+    <!-- Loader -->
+    <div id="loader" class="initial-loader">
+       <div class="pulse-anim">KANTO</div>
     </div>
+
+    <div id="root"></div>
+
+    <!-- Error Handler Script -->
+    <script>
+      window.onerror = function(msg, url, line, col, error) {
+        var errorBox = document.getElementById('global-error');
+        if (errorBox) {
+          errorBox.style.display = 'block';
+          errorBox.innerText = 'JS Error: ' + msg + '\nLine: ' + line;
+        }
+        // Force hide loader if error occurs so we can see the error
+        var loader = document.getElementById('loader');
+        if(loader) loader.style.display = 'none';
+      };
+    </script>
+
+    <!-- Main Entry Point -->
     <script type="module" src="./index.tsx"></script>
   </body>
 </html>
